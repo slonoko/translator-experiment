@@ -10,9 +10,9 @@ from nltk.translate.bleu_score import sentence_bleu, SmoothingFunction
 
 def clean_up_logs(data_dir):
     checkpoint_dir = os.path.join(data_dir, "checkpoints")
-    if os.path.exists(checkpoint_dir):
+    """     if os.path.exists(checkpoint_dir):
         shutil.rmtree(checkpoint_dir, ignore_errors=True)
-        os.makedirs(checkpoint_dir)
+        os.makedirs(checkpoint_dir) """
     return checkpoint_dir
 
 
@@ -188,11 +188,15 @@ def evaluate_bleu_score(encoder, decoder, test_dataset,
     return np.mean(np.array(bleu_scores))
 
 
-NUM_SENT_PAIRS = 30000
+NUM_SENT_PAIRS = 50000
 EMBEDDING_DIM = 256
 ENCODER_DIM, DECODER_DIM = 1024, 1024
 BATCH_SIZE = 64
 NUM_EPOCHS = 30
+
+import tensorflow as tf
+physical_devices = tf.config.list_physical_devices('GPU')
+tf.config.experimental.set_memory_growth(physical_devices[0], enable=True)
 
 tf.random.set_seed(42)
 
@@ -269,7 +273,11 @@ checkpoint = tf.train.Checkpoint(optimizer=optimizer,
 num_epochs = NUM_EPOCHS
 eval_scores = []
 
-for e in range(num_epochs):
+status = checkpoint.restore(tf.train.latest_checkpoint(checkpoint_dir)).expect_partial()
+status.assert_existing_objects_matched()
+translate(encoder, decoder, "my house is very old", word2idx_fr, idx2word_fr)
+
+"""for e in range(num_epochs):
     encoder_state = encoder.init_state(batch_size)
 
     for batch, data in enumerate(train_dataset):
@@ -280,14 +288,8 @@ for e in range(num_epochs):
     
     print("Epoch: {}, Loss: {:.4f}".format(e + 1, loss.numpy()))
 
-    if e % 10 == 0:
-        checkpoint.save(file_prefix=checkpoint_prefix)
-    
     predict(encoder, decoder, batch_size, sents_en, data_en,
         sents_fr_out, word2idx_fr, idx2word_fr)
-
-
-    translate(encoder, decoder, "i am alive", word2idx_fr, idx2word_fr)
 
 
     eval_score = evaluate_bleu_score(encoder, decoder, test_dataset, word2idx_fr, idx2word_fr)
@@ -295,4 +297,4 @@ for e in range(num_epochs):
     print("Eval Score (BLEU): {:.3e}".format(eval_score))
     # eval_scores.append(eval_score)
 
-checkpoint.save(file_prefix=checkpoint_prefix)
+checkpoint.save(file_prefix=checkpoint_prefix)"""
