@@ -127,13 +127,15 @@ def predict(encoder, decoder, batch_size,
     
     print("predicted", " ".join(pred_sent_fr))
 
-def translate(encoder, decoder, batch_size, 
-        sents_en, data_en, 
-        word2idx_fr, idx2word_fr):
-    random_id = np.random.choice(len(sents_en))
-    print("input",  " ".join(sents_en[random_id]))
+def translate(encoder, decoder, text_en, word2idx_fr, idx2word_fr):
+    processed_text = [w for w in preprocess_sentence(text_en).split()]
+    txt = [processed_text]
+    tokenizer_en = tf.keras.preprocessing.text.Tokenizer(filters="", lower=False)
+    tokenizer_en.fit_on_texts(txt)
+    data_en = tokenizer_en.texts_to_sequences(txt)
+    data_en = tf.keras.preprocessing.sequence.pad_sequences(data_en, padding="post")
 
-    encoder_in = tf.expand_dims(data_en[random_id], axis=0)
+    encoder_in = tf.expand_dims(data_en[0], axis=0)
 
     encoder_state = encoder.init_state(1)
     encoder_out, encoder_state = encoder(encoder_in, encoder_state)
@@ -151,8 +153,7 @@ def translate(encoder, decoder, batch_size,
             break
         decoder_in = decoder_pred
     
-    print("predicted", " ".join(pred_sent_fr))
-
+    return " ".join(pred_sent_fr)
 
 def evaluate_bleu_score(encoder, decoder, batch_size, test_dataset, 
         word2idx_fr, idx2word_fr):

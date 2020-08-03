@@ -111,7 +111,6 @@ for e in range(num_epochs):
     #tt.predict(encoder, decoder, batch_size, sents_en, data_en, sents_fr_out, word2idx_fr, idx2word_fr)
 
     eval_score = tt.evaluate_bleu_score(encoder, decoder, batch_size, test_dataset, word2idx_fr, idx2word_fr)
-    print(f'Epoch {num_epochs}: with a BLEU score of {eval_score}')
     # eval_scores.append(eval_score)
 
 checkpoint.save(file_prefix=checkpoint_prefix)

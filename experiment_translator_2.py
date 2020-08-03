@@ -13,7 +13,7 @@ estimator = TensorFlow(
     framework_version="2.1",
     environment_definition=environment,
     compute_target="local",
-    #script_params={'--data-size': 3000},
+    script_params={'--data-size': 3000},
     inputs=[fra_eng_ds.as_named_input('in_data')]
 )
 

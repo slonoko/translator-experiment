@@ -1,0 +1,9 @@
+name: translate-service-env
+dependencies:
+  - python=3.7.4
+  - tensorflow-gpu
+  - tensorflow-datasets
+  - pandas
+  - nltk
+  - pip:
+    - azureml-sdk[notebooks,explain]
